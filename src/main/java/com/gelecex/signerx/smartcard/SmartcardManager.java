@@ -4,9 +4,9 @@ package com.gelecex.signerx.smartcard;
  * Created by obetron on 27.04.2022
  */
 
+import com.gelecex.signerx.SignerxPkcs11Exception;
 import com.gelecex.signerx.common.EnumOsArch;
 import com.gelecex.signerx.common.EnumOsName;
-import com.gelecex.signerx.common.exception.SignerxException;
 import com.gelecex.signerx.common.smartcard.*;
 import com.gelecex.signerx.pkcs11.PKCS11Manager;
 import com.gelecex.signerx.utils.SCXmlParser;
@@ -42,7 +42,7 @@ public class SmartcardManager implements PKCS11Manager {
         }
     }
 
-    public List<SignerxSmartcard> getPluggedSmartcardList() throws SignerxException {
+    public List<SignerxSmartcard> getPluggedSmartcardList() throws SignerxPkcs11Exception {
         List<SignerxSmartcard> signerxSmartcardList = new ArrayList<>();
         try {
             TerminalFactory terminalFactory = TerminalFactory.getDefault();
@@ -68,7 +68,7 @@ public class SmartcardManager implements PKCS11Manager {
                 }
             }
         } catch (CardException e) {
-            throw new SignerxException("Sistemde takili olan terminaller alinirken hata olustu!", e);
+            throw new SignerxPkcs11Exception("Sistemde takili olan terminaller alinirken hata olustu!", e);
         }
         return signerxSmartcardList;
     }
@@ -78,7 +78,7 @@ public class SmartcardManager implements PKCS11Manager {
 
     }
 
-    private void openSessionOnSmartcard(SignerxSmartcard signerxSmartcard) throws SignerxException {
+    private void openSessionOnSmartcard(SignerxSmartcard signerxSmartcard) throws SignerxPkcs11Exception {
         try {
             long slotIndex = 1L;
             PKCS11 pkcs11 = PKCS11.getInstance(signerxSmartcard.getCardLibName(), "C_GetFunctionList", null, false);
@@ -102,9 +102,9 @@ public class SmartcardManager implements PKCS11Manager {
             signerxSmartcard.setCertificateList(certificates);
             signerxSmartcard.setCertificateInfos(getSignerxCertificateList(certificates));
         } catch (PKCS11Exception e) {
-            throw new SignerxException("PKCS11 islemleri sirasinda bir hata olustu!", e);
+            throw new SignerxPkcs11Exception("PKCS11 islemleri sirasinda bir hata olustu!", e);
         } catch (IOException e) {
-            throw new SignerxException("Surucu kutuphanesi kullanilarak PKCS11 nesnesi olusturulurken hata olustu!", e);
+            throw new SignerxPkcs11Exception("Surucu kutuphanesi kullanilarak PKCS11 nesnesi olusturulurken hata olustu!", e);
         }
     }
 
@@ -135,14 +135,14 @@ public class SmartcardManager implements PKCS11Manager {
         return principalStr.substring(principalStr.indexOf("SERIALNUMBER=")+13, principalStr.indexOf("SERIALNUMBER")+24);
     }
 
-    private List<X509Certificate> getSmartcardCertificates(PKCS11 pkcs11, long sessionId) throws SignerxException {
+    private List<X509Certificate> getSmartcardCertificates(PKCS11 pkcs11, long sessionId) throws SignerxPkcs11Exception {
         try {
             List<X509Certificate> certificateList = new ArrayList<>();
             CK_ATTRIBUTE[] ckAttributeTemplates = {CLASS_CERTIFICATE_ATTR, TOKEN_ATTR};
             pkcs11.C_FindObjectsInit(sessionId, ckAttributeTemplates);
             long[] availableCertificates = pkcs11.C_FindObjects(sessionId, 10L);
             if(availableCertificates == null) {
-                throw new SignerxException("Akilli kart icerisinden sertifikalar alinirken hata olustu!");
+                throw new SignerxPkcs11Exception("Akilli kart icerisinden sertifikalar alinirken hata olustu!");
             }
             for (long availableCertificate : availableCertificates) {
                 CK_ATTRIBUTE[] template = new CK_ATTRIBUTE[1];
@@ -158,11 +158,11 @@ public class SmartcardManager implements PKCS11Manager {
             }
             return certificateList;
         } catch (PKCS11Exception | CertificateException e) {
-            throw new SignerxException("Akilli karttan sertifikalar cekilirken hata olustu!", e);
+            throw new SignerxPkcs11Exception("Akilli karttan sertifikalar cekilirken hata olustu!", e);
         }
     }
 
-    private String detectSmartcardLib(String atrValue) throws SignerxException {
+    private String detectSmartcardLib(String atrValue) throws SignerxPkcs11Exception {
         List<SmartcardLibrary> smartcardLibraryList = getSmartcardLibraryList(atrValue);
         if(smartcardLibraryList != null && smartcardLibraryList.size() > 1) {
             EnumOsArch osArch = SmartcardUtils.detectSystemArch();
@@ -179,7 +179,7 @@ public class SmartcardManager implements PKCS11Manager {
         return null;
     }
 
-    private List<SmartcardLibrary> getSmartcardLibraryList(String atrValue) throws SignerxException {
+    private List<SmartcardLibrary> getSmartcardLibraryList(String atrValue) throws SignerxPkcs11Exception {
         SCXmlParser xmlParser = new SCXmlParser();
         List<SmartcardType> smartcardTypeList = xmlParser.readSmarcardDatabaseXml();
         for (SmartcardType smartcardType : smartcardTypeList) {
@@ -196,7 +196,7 @@ public class SmartcardManager implements PKCS11Manager {
         return new ArrayList<>();
     }
 
-    private String getPluggedSmartcardLibName(String atrValue) throws SignerxException {
+    private String getPluggedSmartcardLibName(String atrValue) throws SignerxPkcs11Exception {
         String osName = System.getProperty("os.name");
         String libName = detectSmartcardLib(atrValue);
         if(osName.contains(EnumOsName.Mac.name()) || osName.contains(EnumOsName.Linux.name())) {
