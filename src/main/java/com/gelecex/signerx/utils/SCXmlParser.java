@@ -1,6 +1,6 @@
 package com.gelecex.signerx.utils;
 
-import com.gelecex.signerx.common.exception.SignerxException;
+import com.gelecex.signerx.SignerxPkcs11Exception;
 import com.gelecex.signerx.common.smartcard.SmartcardAtr;
 import com.gelecex.signerx.common.smartcard.SmartcardLibrary;
 import com.gelecex.signerx.common.smartcard.SmartcardType;
@@ -25,7 +25,7 @@ public class SCXmlParser extends DefaultHandler {
     private List<SmartcardLibrary> smartcardLibrayList;
     private List<SmartcardAtr> smartcardAtrList;
 
-    public List<SmartcardType> readSmarcardDatabaseXml() throws SignerxException {
+    public List<SmartcardType> readSmarcardDatabaseXml() throws SignerxPkcs11Exception {
         String scdatabasePath = "/scdatabase.xml";
         try {
             SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
@@ -33,13 +33,13 @@ public class SCXmlParser extends DefaultHandler {
             saxParser.parse(getClass().getResourceAsStream(scdatabasePath), this);
             return smartcardTypeList;
         } catch (SAXException e) {
-            throw new SignerxException("SAX parser hatasi olustu!", e);
+            throw new SignerxPkcs11Exception("SAX parser hatasi olustu!", e);
         } catch (ParserConfigurationException e) {
-            throw new SignerxException("SAX parse olusturulamadi!", e);
+            throw new SignerxPkcs11Exception("SAX parse olusturulamadi!", e);
         } catch (IllegalArgumentException e) {
-            throw new SignerxException(scdatabasePath + " dosyasi, verilen path icerisinde bulunamadi!", e);
+            throw new SignerxPkcs11Exception(scdatabasePath + " dosyasi, verilen path icerisinde bulunamadi!", e);
         } catch (IOException e) {
-            throw new SignerxException("I/O hatasi olustu!", e);
+            throw new SignerxPkcs11Exception("I/O hatasi olustu!", e);
         }
     }
 

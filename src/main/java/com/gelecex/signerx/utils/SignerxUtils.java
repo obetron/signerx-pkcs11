@@ -1,7 +1,7 @@
 package com.gelecex.signerx.utils;
 
+import com.gelecex.signerx.SignerxPkcs11Exception;
 import com.gelecex.signerx.common.EnumHashAlgorithm;
-import com.gelecex.signerx.common.exception.SignerxException;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -11,22 +11,22 @@ import java.security.NoSuchAlgorithmException;
  */
 public class SignerxUtils {
 
-    public static byte[] calculateHash(byte[] val, String digestAlg) throws SignerxException {
+    public static byte[] calculateHash(byte[] val, String digestAlg) throws SignerxPkcs11Exception {
         if(digestAlg.equals("SHA256") || digestAlg.equals("SHA-256")) {
             return calculateHash(val, EnumHashAlgorithm.SHA256);
         } else if(digestAlg.equals("SHA512") || digestAlg.equals("SHA-512")) {
             return calculateHash(val, EnumHashAlgorithm.SHA512);
         } else {
-            throw new SignerxException("Desteklenmeyen Ozet Algoritması Hatası!!!");
+            throw new SignerxPkcs11Exception("Desteklenmeyen Ozet Algoritması Hatası!!!");
         }
     }
 
-    public static byte[] calculateHash(byte[] val, EnumHashAlgorithm gelecexDigestAlg) throws SignerxException {
+    public static byte[] calculateHash(byte[] val, EnumHashAlgorithm gelecexDigestAlg) throws SignerxPkcs11Exception {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance(gelecexDigestAlg.toString());
             return messageDigest.digest(val);
         } catch (NoSuchAlgorithmException e) {
-            throw new SignerxException("Hatali mesaj ozeti!", e);
+            throw new SignerxPkcs11Exception("Hatali mesaj ozeti!", e);
         }
     }
 
