@@ -1,6 +1,6 @@
 package com.gelecex.signerx.smartcard;
 
-import com.gelecex.signerx.SignerxPkcs11Exception;
+import com.gelecex.signerx.exception.SignerxPkcs11Exception;
 import com.gelecex.signerx.common.EnumOsArch;
 import com.gelecex.signerx.common.EnumOsName;
 import org.slf4j.Logger;

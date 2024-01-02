@@ -1,6 +1,6 @@
 package com.gelecex.signerx.utils;
 
-import com.gelecex.signerx.SignerxPkcs11Exception;
+import com.gelecex.signerx.exception.SignerxPkcs11Exception;
 import com.gelecex.signerx.common.smartcard.SmartcardAtr;
 import com.gelecex.signerx.common.smartcard.SmartcardLibrary;
 import com.gelecex.signerx.common.smartcard.SmartcardType;

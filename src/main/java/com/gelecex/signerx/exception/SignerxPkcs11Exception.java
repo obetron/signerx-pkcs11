@@ -1,4 +1,4 @@
-package com.gelecex.signerx;
+package com.gelecex.signerx.exception;
 
 public class SignerxPkcs11Exception extends RuntimeException {
     public SignerxPkcs11Exception(String message) {
